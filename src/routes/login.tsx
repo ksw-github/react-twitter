@@ -59,7 +59,7 @@ export default function CreateAccount() {
 
   return (
     <Wrapper>
-      <Title>로그인 𝕏</Title>
+      <Title>로그인 𝕏.</Title>
       <Form onSubmit={onSubmit}>
         <Input
           onChange={onChange}
