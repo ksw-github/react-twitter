@@ -33,6 +33,7 @@ const Payload = styled.p`
   padding: 10px;
   margin: 10px 0px;
   font-size: 18px;
+  white-space: pre-line;
 `;
 const DeleteButton = styled.button`
   margin-top: 10px;
