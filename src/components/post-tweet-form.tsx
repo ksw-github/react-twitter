@@ -79,8 +79,6 @@ export default function PostTweetForm(){
     if (!user || isLoading || tweet === "" || tweet.length > 180) return;
     try {
       setLoading(true);
-      console.log("Before saving:", tweet);
-      // const formattedTweet = tweet.replace(/\n/g, `\n`);
       const doc = await addDoc(collection(db, "tweets"), {
         tweet,
         createdAt: Date.now(),

@@ -3,7 +3,7 @@ import { auth, db, storage } from "../firebase";
 import { useEffect, useState } from "react";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { updateProfile } from "firebase/auth";
-import { collection, getDocs, limit, orderBy, query, where } from "firebase/firestore";
+import { collection, getDocs, limit, orderBy, query, where, updateDoc, doc } from "firebase/firestore";
 import { ITweet } from "../components/timeline";
 import Tweet from "../components/tweet";
 
@@ -42,12 +42,67 @@ const Tweets = styled.div`
   flex-direction: column;
   gap: 10px;
 `;
+const EditButton = styled.button`
+  margin-top: 10px;
+  background-color: transparent;
+  color: gray;
+  border: 0;
+  font-size: 14px;
+  text-transform: uppercase;
+  cursor: pointer;
+`;
+const SaveButton = styled.button`
+  margin-top: 10px;
+  background-color: transparent;
+  color: white;
+  border: 0;
+  font-size: 14px;
+  text-transform: uppercase;
+  cursor: pointer;
+`;
+const TextArea = styled.textarea`
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 10px;
+  margin: 10px 0px;
+  border-radius: 3px;
+  font-size: 16px;
+  color: white;
+  background-color: rgba(255, 255, 255, 0.1);
+  width: 100%;
+  resize: none;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  &::placeholder {
+    font-size: 16px;
+  }
+  &:focus {
+    outline: none;
+    border-color: #1d9bf0;
+  }
+`;
 
 // 닉네임수정기능 추가해야함
-export default function Profile() {
+export default function Profile({ userId, id }: ITweet) {
   const user = auth.currentUser;
   const [avatar, setAvatar] = useState(user?.photoURL);
   const [tweets, setTweets] = useState<ITweet[]>([]);
+  const [editMode, setEditMode] = useState(false);
+  const [newName, setNewName] = useState<ITweet[]>([]);
+  const onUsernameChange = async () => {
+    if (user?.uid !== userId) return;
+    try {
+      await updateDoc(doc(db, "tweets", id), {
+        username: newName,
+      });
+      setEditMode(false);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  const onEdit = async () => {
+    if (user?.uid !== userId) return;
+    setEditMode(!editMode);
+  };
   const onAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const { files } = e.target;
     if (!user) return;
@@ -109,7 +164,25 @@ export default function Profile() {
         type="file"
         accept="image/*"
       />
-      <Name>{user?.displayName ?? "이름없음"}</Name>
+      {editMode ? (
+      <Name>
+        <TextArea
+        required
+        rows={1}
+        maxLength={80}
+        // value={newName}
+        // onChange={(e) => setNewName(e.target.value)}
+        placeholder={user?.displayName ?? "이름없음"}
+        />
+        <EditButton onClick={onEdit} style={{ color: 'tomato' }}>취소</EditButton>
+        <SaveButton onClick={onUsernameChange}>저장</SaveButton>
+      </Name>
+      ) : (
+        <Name>
+        {user?.displayName ?? "이름없음"}
+        <EditButton onClick={onEdit}>수정</EditButton>
+        </Name>
+      )}
       <Tweets>
         {tweets.map((tweet) => (
           <Tweet key={tweet.id} {...tweet} />

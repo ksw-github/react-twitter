@@ -34,6 +34,7 @@ const Payload = styled.p`
   margin: 10px 0px;
   font-size: 18px;
   white-space: pre-line;
+  line-height: 1.5;
 `;
 const DeleteButton = styled.button`
   margin-top: 10px;
@@ -47,7 +48,7 @@ const DeleteButton = styled.button`
 const EditButton = styled.button`
   margin-top: 10px;
   background-color: transparent;
-  color: white;
+  color: grey;
   border: 0;
   font-size: 14px;
   text-transform: uppercase;
@@ -137,13 +138,11 @@ export default function Tweet({ username, photo, tweet, userId, id }: ITweet) {
       //   // 새로운 사진이 없으면, 기존 사진을 그대로 유지하거나 삭제
       //   photoUrl = null; // photoUrl을 null로 설정하여 해당 필드를 삭제하려면 이렇게 처리
       // }
-  
-      // Firestore에서 트윗 문서 업데이트
       await updateDoc(doc(db, "tweets", id), {
         tweet: newTweet,
         // photo: photoUrl,
       });
-      setEditMode(false); // 수정 후에는 다시 보기 모드로 돌아감
+      setEditMode(false);
     } catch (e) {
       console.log(e);
     }
@@ -151,14 +150,6 @@ export default function Tweet({ username, photo, tweet, userId, id }: ITweet) {
 
   return (
     <Wrapper>
-      {/* <Column>
-        <Username>{username}</Username>
-        <Payload>{tweet}</Payload>
-        {user?.uid === userId ? (<DeleteButton onClick={onDelete}>삭제</DeleteButton>) : null}
-        {user?.uid === userId ? (<EditButton onClick={onEdit}>수정</EditButton>) : null}
-      </Column>
-      <Column>{photo ? <Photo src={photo} /> : null}</Column> */}
-
       <Column>
         <Username>{username}</Username>
         {editMode ? (
